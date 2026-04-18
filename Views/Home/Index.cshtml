@@ -1,0 +1,80 @@
+﻿@model List<ECommerceMVC.Models.Listing>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .listing-card img {
+        height: 20rem;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .listing-card {
+        border: none;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .listing-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        cursor: pointer;
+    }
+
+    .listing-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .card-body {
+        padding: 0.8rem;
+    }
+</style>
+
+<h2 class="mb-4">Explore Listings</h2>
+
+@if (!Model.Any())
+{
+    <p>No listings available. Be the first to add one!</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+
+                <!-- ✅ Proper Razor routing -->
+                <a asp-controller="Listings"
+                   asp-action="Details"
+                   asp-route-id="@item.Id"
+                   class="listing-link">
+
+                    <div class="card listing-card h-100 shadow-sm">
+
+                        <!-- ✅ Image with fallback -->
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) 
+                            ? "/images/default.jpg" 
+                            : item.ImageUrl)" 
+                             class="card-img-top" 
+                             alt="listing_image" />
+
+                        <div class="card-body">
+                            <p class="card-text mb-0">
+                                <b>@item.Title</b>
+                            </p>
+
+                            <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                                ₹@item.Price.ToString("N0")
+                            </p>
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+        }
+    </div>
+}

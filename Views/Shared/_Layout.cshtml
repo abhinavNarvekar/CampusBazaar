@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - CampusBazaar</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+      .search-btn {
+        background-color: blue;
+        color: white;
+        border-radius: 25px;
+        padding: 0 1rem;
+      }
+
+      .search-btn:hover {
+        background-color: #fe424d;
+        color: white;
+      }
+
+      .search-input {
+        border-radius: 25px;
+        padding: 0.5rem 3rem;
+        font-size: 1rem;
+      }
+       .f-info {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    margin-top: 3rem;
+    border-top: 1px solid #ddd;
+    line-height: 1.5;     
+  }
+
+  .f-info-socials i {
+    margin: 0 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+     /* margin-bottom: 1rem; */
+  }
+
+  .f-info-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .f-info-links a:hover {
+    text-decoration: underline;
+  }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+
+    <!-- LOGO -->
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+       <i class="fa-solid fa-cart-arrow-down" style="color:blue;"></i>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+        <!-- 🔥 ONLY SHOW ON NON-AUTH PAGES -->
+        @if (currentController != "Auth")
+        {
+            <!-- LEFT -->
+            <div class="navbar-nav">
+                <a class="nav-link" asp-controller="Home" asp-action="Index">Explore</a>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="navbar-nav ms-auto">
+                <form class="d-flex" method="get" asp-controller="Home" asp-action="Index">
+                    <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search items" />
+                    <button class="btn search-btn" type="submit">Search</button>
+                </form>
+            </div>
+        }
+
+        <!-- 🔥 ALWAYS SHOW -->
+        <div class="navbar-nav ms-auto">
+
+         @if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <a class="nav-link" asp-controller="Listings" asp-action="Create">Add Item</a>
+    <a class="nav-link" asp-controller="Auth" asp-action="Logout">Log out</a>
+}
+else
+{
+    <a class="nav-link" asp-controller="Auth" asp-action="Login">Add Item</a>
+    <a class="nav-link" asp-controller="Auth" asp-action="Register"><b>Sign Up</b></a>
+    <a class="nav-link" asp-controller="Auth" asp-action="Login"><b>Log In</b></a>
+}
+
+        </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- 🔥 THIS FIXES YOUR ERROR -->
+<div class="container mt-4 flex-grow-1">
+    @RenderBody()
+</div>
+<footer>
+  <div class="f-info">
+
+    <div class="f-info-socials mb-3">
+      <i class="fa-brands fa-square-facebook"></i>
+      <i class="fa-brands fa-instagram"></i>
+      <i class="fa-brands fa-linkedin"></i>
+    </div>
+
+    <div class="f-info-brand mb-2">
+      &copy; CampusBazaar
+    </div>
+
+    <div class="f-info-links mt-2">
+      <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+
+  </div>
+</footer>
+
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@RenderSection("Scripts", required: false)
+</body>
+</html>

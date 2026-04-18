@@ -1,0 +1,128 @@
+@model ECommerceMVC.Models.Listing
+
+@{
+    ViewData["Title"] = "Listing Details";
+}
+
+<style>
+    .listing-img {
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .card {
+        border: none;
+    }
+
+    .seller-box p {
+        margin-bottom: 4px;
+    }
+</style>
+
+<div class="container mt-3">
+
+    <!-- TITLE -->
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+            <h3>@Model.Title</h3>
+        </div>
+    </div>
+
+    <!-- IMAGE + DETAILS -->
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+
+            <div class="card shadow-sm">
+
+                <!-- IMAGE (with fallback) -->
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) 
+                        ? "/images/default.jpg" 
+                        : Model.ImageUrl)"
+                     class="card-img-top listing-img"
+                     alt="listing_image" />
+
+                <div class="card-body">
+
+                    <!-- DESCRIPTION -->
+                    <p>@Model.Description</p>
+
+                    <!-- PRICE -->
+                    <p class="fw-bold text-success">
+                        ₹@Model.Price.ToString("N0")
+                    </p>
+
+                    <hr />
+
+                    <!-- 🔥 SELLER INFO -->
+                    <div class="seller-box">
+                        <h5>Seller Information</h5>
+
+                        <p><b>Name:</b> @Model.User?.FullName</p>
+                        <p><b>Department:</b> @Model.User?.Department</p>
+                        <p><b>Year:</b> @Model.User?.Year</p>
+
+                        <!-- 🔒 Show contact only if logged in -->
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <p><b>Phone:</b> @Model.User?.PhoneNumber</p>
+                            <p><b>Email:</b> @Model.User?.Email</p>
+
+                            <!-- 📞 Quick call button -->
+                            <a href="tel:@Model.User?.PhoneNumber" 
+                               class="btn btn-success btn-sm mt-2">
+                                Call Seller
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="text-muted">
+                                Login to view contact details
+                            </p>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🔥 EDIT + DELETE (ONLY OWNER) -->
+    @{
+        var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    }
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated &&
+         currentUserId == Model.UserId)
+    {
+        <div class="row mt-3">
+            <div class="col-12 col-md-8 offset-md-2 d-flex gap-2">
+
+                <!-- EDIT -->
+                <a asp-controller="Listings"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-dark w-50">
+                    Edit
+                </a>
+
+                <!-- DELETE -->
+                <form asp-controller="Listings"
+                      asp-action="Delete"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      class="w-50">
+
+                    @Html.AntiForgeryToken()
+
+                    <button class="btn btn-danger w-100">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    }
+
+</div>
