@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ECommerceMVC.Data;
 using ECommerceMVC.Models;
+using DotNetEnv;
 
+Env.Load(); 
 var builder = WebApplication.CreateBuilder(args);
 
 // 🔗 MySQL connection

@@ -7,12 +7,13 @@ public class CloudinaryService
 
     public CloudinaryService()
     {
-        var account = new Account(
-            Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME"),
-            Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY"),
-            Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET")
-        );
+        var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME");
+        var apiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY");
+        var apiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET");
 
+        Console.WriteLine($"CloudName: {cloudName}"); // 🔥 debug
+
+        var account = new Account(cloudName, apiKey, apiSecret);
         _cloudinary = new Cloudinary(account);
     }
 
@@ -31,7 +32,6 @@ public class CloudinaryService
         };
 
         var result = _cloudinary.Upload(uploadParams);
-
         return result.SecureUrl.ToString();
     }
 }
