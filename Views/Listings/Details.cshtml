@@ -2,127 +2,385 @@
 
 @{
     ViewData["Title"] = "Listing Details";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isOwner = User.Identity != null && User.Identity.IsAuthenticated && currentUserId == Model.UserId;
+    var isLoggedIn = User.Identity != null && User.Identity.IsAuthenticated;
 }
 
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
 <style>
-    .listing-img {
-        height: 400px;
+    :root {
+        --cream: #FAF7F2;
+        --ink: #1A1714;
+        --muted: #8C8579;
+        --accent: #C84B2F;
+        --accent-light: #F5EAE6;
+        --card-bg: #FFFFFF;
+        --border: #E8E3DB;
+        --tag-bg: #F0EBE3;
+    }
+
+    .details-section {
+        background: var(--cream);
+        min-height: 80vh;
+        padding: 2.5rem 0 5rem;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
+        margin-bottom: 1.75rem;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .back-link svg {
+        width: 14px; height: 14px;
+        stroke: currentColor;
+        transition: transform 0.2s ease;
+    }
+
+    .back-link:hover svg { transform: translateX(-3px); }
+
+    .listing-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        margin: 0 0 1.5rem;
+        line-height: 1.2;
+    }
+
+    .listing-img-wrap {
+        width: 100%;
+        height: 380px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+
+    .listing-img-wrap img {
+        width: 100%; height: 100%;
         object-fit: cover;
-        border-radius: 10px;
+        display: block;
+        transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .card {
+    .listing-img-wrap:hover img { transform: scale(1.03); }
+
+    .detail-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1.6rem 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .panel-label {
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+    }
+
+    .description-text {
+        font-size: 0.97rem;
+        color: #3D3A35;
+        line-height: 1.75;
+        margin: 0;
+    }
+
+    .price-display {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--accent);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .divider {
         border: none;
+        border-top: 1px solid var(--border);
+        margin: 1.4rem 0;
     }
 
-    .seller-box p {
-        margin-bottom: 4px;
+    .seller-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.65rem;
+        font-size: 0.92rem;
     }
+
+    .seller-row .s-label {
+        color: var(--muted);
+        min-width: 90px;
+        font-size: 0.85rem;
+    }
+
+    .seller-row .s-value {
+        color: var(--ink);
+        font-weight: 500;
+    }
+
+    .locked-notice {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--tag-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 0.5rem;
+    }
+
+    .locked-notice svg {
+        width: 14px; height: 14px;
+        stroke: var(--muted);
+        flex-shrink: 0;
+    }
+
+    .locked-notice a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .locked-notice a:hover { text-decoration: underline; }
+
+    .btn-call {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 1rem;
+        padding: 0.6rem 1.4rem;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-call:hover {
+        background: #A83A20;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .btn-call svg {
+        width: 14px; height: 14px;
+        stroke: #fff;
+    }
+
+    .owner-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn-edit {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0.65rem 1rem;
+        background: var(--ink);
+        color: #FAF7F2;
+        border: 1px solid var(--ink);
+        border-radius: 3px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-edit:hover {
+        background: #2E2B27;
+        color: #FAF7F2;
+        transform: translateY(-1px);
+    }
+
+    .btn-edit svg, .btn-delete svg {
+        width: 13px; height: 13px;
+        stroke: currentColor;
+    }
+
+    .btn-delete {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0.65rem 1rem;
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 3px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-delete:hover {
+        background: var(--accent);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .delete-form { flex: 1; display: flex; }
+
+    @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { animation: fadeUp 0.5s ease forwards; }
+    .fade-up-2 { animation: fadeUp 0.5s 0.1s ease both; }
+    .fade-up-3 { animation: fadeUp 0.5s 0.2s ease both; }
 </style>
 
-<div class="container mt-3">
+<section class="details-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7">
 
-    <!-- TITLE -->
-    <div class="row">
-        <div class="col-12 col-md-8 offset-md-2">
-            <h3>@Model.Title</h3>
-        </div>
-    </div>
-
-    <!-- IMAGE + DETAILS -->
-    <div class="row">
-        <div class="col-12 col-md-8 offset-md-2">
-
-            <div class="card shadow-sm">
-
-                <!-- IMAGE (with fallback) -->
-                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) 
-                        ? "/images/default.jpg" 
-                        : Model.ImageUrl)"
-                     class="card-img-top listing-img"
-                     alt="listing_image" />
-
-                <div class="card-body">
-
-                    <!-- DESCRIPTION -->
-                    <p>@Model.Description</p>
-
-                    <!-- PRICE -->
-                    <p class="fw-bold text-success">
-                        ₹@Model.Price.ToString("N0")
-                    </p>
-
-                    <hr />
-
-                    <!-- 🔥 SELLER INFO -->
-                    <div class="seller-box">
-                        <h5>Seller Information</h5>
-
-                        <p><b>Name:</b> @Model.User?.FullName</p>
-                        <p><b>Department:</b> @Model.User?.Department</p>
-                        <p><b>Year:</b> @Model.User?.Year</p>
-
-                        <!-- 🔒 Show contact only if logged in -->
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-                            <p><b>Phone:</b> @Model.User?.PhoneNumber</p>
-                            <p><b>Email:</b> @Model.User?.Email</p>
-
-                            <!-- 📞 Quick call button -->
-                            <a href="tel:@Model.User?.PhoneNumber" 
-                               class="btn btn-success btn-sm mt-2">
-                                Call Seller
-                            </a>
-                        }
-                        else
-                        {
-                            <p class="text-muted">
-                                Login to view contact details
-                            </p>
-                        }
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 🔥 EDIT + DELETE (ONLY OWNER) -->
-    @{
-        var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-    }
-
-    @if (User.Identity != null && User.Identity.IsAuthenticated &&
-         currentUserId == Model.UserId)
-    {
-        <div class="row mt-3">
-            <div class="col-12 col-md-8 offset-md-2 d-flex gap-2">
-
-                <!-- EDIT -->
-                <a asp-controller="Listings"
-                   asp-action="Edit"
-                   asp-route-id="@Model.Id"
-                   class="btn btn-dark w-50">
-                    Edit
+                <a asp-controller="Home" asp-action="Index" class="back-link fade-up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M11 6l-6 6 6 6"/>
+                    </svg>
+                    All Listings
                 </a>
 
-                <!-- DELETE -->
-                <form asp-controller="Listings"
-                      asp-action="Delete"
-                      asp-route-id="@Model.Id"
-                      method="post"
-                      class="w-50">
+                <h1 class="listing-title fade-up-2">@Model.Title</h1>
 
-                    @Html.AntiForgeryToken()
+                <div class="listing-img-wrap fade-up-2">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                            ? "/images/default.jpg"
+                            : Model.ImageUrl)"
+                         alt="listing_image" />
+                </div>
 
-                    <button class="btn btn-danger w-100">
-                        Delete
-                    </button>
-                </form>
+                <!-- Price + Description -->
+                <div class="detail-panel fade-up-3">
+                    <p class="panel-label">Price</p>
+                    <p class="price-display">₹@Model.Price.ToString("N0")</p>
+
+                    <hr class="divider" />
+
+                    <p class="panel-label">Description</p>
+                    <p class="description-text">@Model.Description</p>
+                </div>
+
+                <!-- Seller Info -->
+                <div class="detail-panel fade-up-3">
+                    <p class="panel-label">Seller Information</p>
+
+                    <div class="seller-row">
+                        <span class="s-label">Name</span>
+                        <span class="s-value">@Model.User?.FullName</span>
+                    </div>
+                    <div class="seller-row">
+                        <span class="s-label">Department</span>
+                        <span class="s-value">@Model.User?.Department</span>
+                    </div>
+                    <div class="seller-row">
+                        <span class="s-label">Year</span>
+                        <span class="s-value">@Model.User?.Year</span>
+                    </div>
+
+                    @if (isLoggedIn)
+                    {
+                        <hr class="divider" />
+                        <div class="seller-row">
+                            <span class="s-label">Phone</span>
+                            <span class="s-value">@Model.User?.PhoneNumber</span>
+                        </div>
+                        <div class="seller-row">
+                            <span class="s-label">Email</span>
+                            <span class="s-value">@Model.User?.Email</span>
+                        </div>
+                        <a href="tel:@Model.User?.PhoneNumber" class="btn-call">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                            </svg>
+                            Call Seller
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="locked-notice">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                            <span><a asp-controller="Account" asp-action="Login">Log in</a> to view contact details</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Owner Actions -->
+                @if (isOwner)
+                {
+                    <div class="owner-actions fade-up-3">
+                        <a asp-controller="Listings"
+                           asp-action="Edit"
+                           asp-route-id="@Model.Id"
+                           class="btn-edit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Edit Listing
+                        </a>
+
+                        <form asp-controller="Listings"
+                              asp-action="Delete"
+                              asp-route-id="@Model.Id"
+                              method="post"
+                              class="delete-form">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-delete">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                    <path d="M9 6V4h6v2"/>
+                                </svg>
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                }
 
             </div>
         </div>
-    }
-
-</div>
+    </div>
+</section>

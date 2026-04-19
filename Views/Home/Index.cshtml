@@ -1,80 +1,266 @@
 ﻿@model List<ECommerceMVC.Models.Listing>
-
 @{
     ViewData["Title"] = "Home Page";
 }
 
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
 <style>
-    .listing-card img {
-        height: 20rem;
-        object-fit: cover;
-        border-radius: 10px;
+    :root {
+        --cream: #FAF7F2;
+        --ink: #1A1714;
+        --muted: #8C8579;
+        --accent: #C84B2F;
+        --accent-light: #F5EAE6;
+        --card-bg: #FFFFFF;
+        --border: #E8E3DB;
+        --tag-bg: #F0EBE3;
+    }
+    /* html, body {
+    background: var(--cream);
+    margin: 0;
+    padding: 0;
+} */
+
+    .listings-section {
+        background: var(--cream);
+        min-height: 60vh;
+        padding: 3rem 0 5rem;
+        font-family: 'DM Sans', sans-serif;
     }
 
-    .listing-card {
-        border: none;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    .section-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.25rem;
     }
 
-    .listing-card:hover {
-        transform: scale(1.03);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        cursor: pointer;
+    .section-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        margin: 0;
+        line-height: 1.15;
+    }
+
+    .section-count {
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-bottom: 0.25rem;
+    }
+
+    .listings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.5rem;
     }
 
     .listing-link {
         text-decoration: none;
         color: inherit;
+        display: block;
+    }
+
+    .listing-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    box-shadow 0.3s ease,
+                    border-color 0.3s ease;
+        position: relative;
+    }
+
+    .listing-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(26,23,20,0.1);
+        border-color: #C5BDB3;
+        cursor: pointer;
+    }
+
+    .listing-card:hover .card-img-wrap::after {
+        opacity: 1;
+    }
+
+    .card-img-wrap {
+        position: relative;
+        overflow: hidden;
+        height: 240px;
+    }
+
+    .card-img-wrap::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 50%, rgba(26,23,20,0.35) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: block;
+    }
+
+    .listing-card:hover .card-img-wrap img {
+        transform: scale(1.05);
     }
 
     .card-body {
-        padding: 0.8rem;
+        padding: 1rem 1.1rem 1.1rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin: 0 0 0.4rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+
+    .card-footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-price {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--accent);
+        letter-spacing: -0.01em;
+    }
+
+    .card-arrow {
+        width: 28px;
+        height: 28px;
+        background: var(--accent-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .listing-card:hover .card-arrow {
+        background: var(--accent);
+    }
+
+    .card-arrow svg {
+        width: 13px;
+        height: 13px;
+        stroke: var(--accent);
+        transition: stroke 0.2s ease;
+    }
+
+    .listing-card:hover .card-arrow svg {
+        stroke: #fff;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 1rem;
+        color: var(--muted);
+    }
+
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+    }
+
+    .empty-state h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+    }
+
+    @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .listing-item {
+        opacity: 0;
+        animation: fadeUp 0.5s ease forwards;
     }
 </style>
 
-<h2 class="mb-4">Explore Listings</h2>
+<section class="listings-section">
+    <div class="container">
 
-@if (!Model.Any())
-{
-    <p>No listings available. Be the first to add one!</p>
-}
-else
-{
-    <div class="row">
-        @foreach (var item in Model)
+        <div class="section-header">
+            <h2 class="section-title">Explore Listings</h2>
+            @if (Model.Any())
+            {
+                <span class="section-count">@Model.Count listing@(Model.Count == 1 ? "" : "s")</span>
+            }
+        </div>
+
+        @if (!Model.Any())
         {
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-
-                <!-- ✅ Proper Razor routing -->
-                <a asp-controller="Listings"
-                   asp-action="Details"
-                   asp-route-id="@item.Id"
-                   class="listing-link">
-
-                    <div class="card listing-card h-100 shadow-sm">
-
-                        <!-- ✅ Image with fallback -->
-                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) 
-                            ? "/images/default.jpg" 
-                            : item.ImageUrl)" 
-                             class="card-img-top" 
-                             alt="listing_image" />
-
-                        <div class="card-body">
-                            <p class="card-text mb-0">
-                                <b>@item.Title</b>
-                            </p>
-
-                            <p class="text-muted mb-0" style="font-size: 0.9rem;">
-                                ₹@item.Price.ToString("N0")
-                            </p>
-                        </div>
-
-                    </div>
-
-                </a>
-
+            <div class="empty-state">
+                <div class="empty-icon">&#9634;</div>
+                <h3>Nothing here yet</h3>
+                <p>Be the first to add a listing.</p>
             </div>
         }
+        else
+        {
+            <div class="listings-grid">
+                @foreach (var (item, index) in Model.Select((x, i) => (x, i)))
+                {
+                    <div class="listing-item" style="animation-delay: @(index * 60)ms">
+                        <a asp-controller="Listings"
+                           asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="listing-link">
+                            <div class="listing-card">
+                                <div class="card-img-wrap">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl)
+                                        ? "/images/default.jpg"
+                                        : item.ImageUrl)"
+                                         alt="listing_image" />
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-title">@item.Title</p>
+                                    <div class="card-footer-row">
+                                        <span class="card-price">₹@item.Price.ToString("N0")</span>
+                                        <div class="card-arrow">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14M13 6l6 6-6 6"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+
     </div>
-}
+</section>

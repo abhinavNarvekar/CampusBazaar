@@ -2,140 +2,601 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CampusBazaar</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
     <style>
-      .search-btn {
-        background-color: blue;
-        color: white;
-        border-radius: 25px;
-        padding: 0 1rem;
-      }
+           :root {
+            --cream: #FAF7F2;
+            --ink: #1A1714;
+            --muted: #8C8579;
+            --accent: #C84B2F;
+            --accent-light: #F5EAE6;
+            --card-bg: #FFFFFF;
+            --border: #E8E3DB;
+        }
 
-      .search-btn:hover {
-        background-color: #fe424d;
-        color: white;
-      }
+        *, *::before, *::after { box-sizing: border-box; }
 
-      .search-input {
-        border-radius: 25px;
-        padding: 0.5rem 3rem;
-        font-size: 1rem;
-      }
-       .f-info {
-    text-align: center;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    margin-top: 3rem;
-    border-top: 1px solid #ddd;
-    line-height: 1.5;     
-  }
+        body {
+            background: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            display: flex;
+            flex-column: column;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-  .f-info-socials i {
-    margin: 0 10px;
-    font-size: 1.5rem;
-    cursor: pointer;
-     /* margin-bottom: 1rem; */
-  }
+        /* ── NAVBAR ── */
+        .cb-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 247, 242, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 0;
+        }
 
-  .f-info-links a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #333;
-  }
+        .cb-nav-inner {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            height: 62px;
+            padding: 0 1.5rem;
+        }
 
-  .f-info-links a:hover {
-    text-decoration: underline;
-  }
+        .cb-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-right: 2rem;
+            flex-shrink: 0;
+        }
+
+        .cb-brand-mark {
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cb-brand-mark svg {
+            width: 16px; height: 16px;
+            stroke: #fff;
+        }
+
+        .cb-brand-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+        }
+
+        .cb-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .cb-nav-link {
+            font-size: 0.88rem;
+            font-weight: 400;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 3px;
+            transition: color 0.2s ease, background 0.2s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .cb-nav-link:hover {
+            color: var(--ink);
+            background: rgba(26,23,20,0.05);
+        }
+
+        .cb-search-wrap {
+            flex: 1;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        .cb-search-form {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cb-search-form:focus-within {
+            border-color: #C5BDB3;
+            box-shadow: 0 0 0 3px rgba(200,180,160,0.15);
+        }
+
+        .cb-search-icon {
+            padding: 0 0.75rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .cb-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: var(--ink);
+            padding: 0.55rem 0;
+        }
+
+        .cb-search-input::placeholder { color: var(--muted); }
+
+        .cb-search-btn {
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            padding: 0.55rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .cb-search-btn:hover { background: #A83A20; }
+
+        .cb-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .cb-btn-ghost {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 3px;
+            transition: color 0.2s ease, background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .cb-btn-ghost:hover {
+            color: var(--ink);
+            background: rgba(26,23,20,0.05);
+        }
+
+        .cb-btn-primary {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #fff;
+            background: var(--accent);
+            text-decoration: none;
+            padding: 0.42rem 1rem;
+            border-radius: 3px;
+            transition: background 0.2s ease, transform 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .cb-btn-primary:hover {
+            background: #A83A20;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .cb-btn-outline {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--ink);
+            background: transparent;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 3px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .cb-btn-outline:hover {
+            border-color: #C5BDB3;
+            background: rgba(26,23,20,0.04);
+            color: var(--ink);
+        }
+
+        .cb-divider {
+            width: 1px;
+            height: 18px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+
+        /* Mobile toggler */
+        .cb-toggler {
+            display: none;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0.35rem 0.55rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .cb-toggler span {
+            display: block;
+            width: 18px;
+            height: 1.5px;
+            background: var(--ink);
+            margin: 3.5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .cb-mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1rem 1.5rem 1.25rem;
+            border-top: 1px solid var(--border);
+            background: rgba(250, 247, 242, 0.97);
+        }
+
+        .cb-mobile-menu.open { display: flex; }
+
+        .cb-mobile-link {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 0.45rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s;
+        }
+
+        .cb-mobile-link:last-child { border-bottom: none; }
+        .cb-mobile-link:hover { color: var(--ink); }
+
+        .cb-mobile-search {
+            display: flex;
+            margin-bottom: 0.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .cb-mobile-search input {
+            flex: 1; border: none; outline: none;
+            background: transparent;
+            font-size: 0.88rem; padding: 0.5rem 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .cb-mobile-search button {
+            background: var(--accent); border: none; color: #fff;
+            padding: 0.5rem 0.85rem; font-size: 0.8rem;
+            font-family: 'DM Sans', sans-serif; cursor: pointer;
+        }
+
+        @@media (max-width: 768px) {
+            .cb-desktop-only { display: none !important; }
+            .cb-toggler { display: block; }
+        }
+
+        @@media (min-width: 769px) {
+            .cb-mobile-menu { display: none !important; }
+        }
+
+        /* ── MAIN ── */
+        .cb-main {
+            flex: 1;
+        }
+
+        /* ── FOOTER ── */
+        .cb-footer {
+            background: var(--ink);
+            color: rgba(250,247,242,0.6);
+            padding: 3rem 0 2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            margin-top: 4rem;
+        }
+
+        .cb-footer-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .cb-footer-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .cb-footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .cb-footer-brand-mark {
+            width: 28px; height: 28px;
+            background: var(--accent);
+            border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .cb-footer-brand-mark svg {
+            width: 15px; height: 15px; stroke: #fff;
+        }
+
+        .cb-footer-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(250,247,242,0.9);
+            letter-spacing: -0.01em;
+        }
+
+        .cb-footer-tagline {
+            color: rgba(250,247,242,0.4);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            max-width: 200px;
+            line-height: 1.5;
+        }
+
+        .cb-footer-links {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .cb-footer-col h4 {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(250,247,242,0.35);
+            margin: 0 0 0.85rem;
+        }
+
+        .cb-footer-col a {
+            display: block;
+            color: rgba(250,247,242,0.6);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            font-size: 0.88rem;
+            transition: color 0.2s ease;
+        }
+
+        .cb-footer-col a:hover { color: rgba(250,247,242,0.95); }
+
+        .cb-footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-top: 1.75rem;
+            border-top: 1px solid rgba(250,247,242,0.1);
+        }
+
+        .cb-footer-copy {
+            font-size: 0.8rem;
+            color: rgba(250,247,242,0.3);
+        }
+
+        .cb-footer-socials {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cb-footer-socials a {
+            width: 32px; height: 32px;
+            border: 1px solid rgba(250,247,242,0.15);
+            border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(250,247,242,0.45);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .cb-footer-socials a:hover {
+            border-color: rgba(250,247,242,0.4);
+            color: rgba(250,247,242,0.9);
+        }
     </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isAuthPage = currentController == "Auth";
 }
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
+<!-- ══ NAVBAR ══ -->
+<nav class="cb-nav">
+    <div class="cb-nav-inner">
 
-    <!-- LOGO -->
-    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-       <i class="fa-solid fa-cart-arrow-down" style="color:blue;"></i>
-    </a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-
-        <!-- 🔥 ONLY SHOW ON NON-AUTH PAGES -->
-        @if (currentController != "Auth")
-        {
-            <!-- LEFT -->
-            <div class="navbar-nav">
-                <a class="nav-link" asp-controller="Home" asp-action="Index">Explore</a>
+        <!-- Brand -->
+        <a class="cb-brand" asp-controller="Home" asp-action="Index">
+            <div class="cb-brand-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 01-8 0"/>
+                </svg>
             </div>
+            <span class="cb-brand-name">CampusBazaar</span>
+        </a>
 
-            <!-- SEARCH -->
-            <div class="navbar-nav ms-auto">
-                <form class="d-flex" method="get" asp-controller="Home" asp-action="Index">
-                    <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search items" />
-                    <button class="btn search-btn" type="submit">Search</button>
+        <!-- Left nav -->
+        <div class="cb-nav-left cb-desktop-only">
+            <a class="cb-nav-link" asp-controller="Home" asp-action="Index">Explore</a>
+        </div>
+
+        <!-- Search (ONLY hidden on auth pages) -->
+        @if (!isAuthPage)
+        {
+            <div class="cb-search-wrap cb-desktop-only">
+                <form class="cb-search-form" method="get" asp-controller="Home" asp-action="Index">
+                    <span class="cb-search-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input class="cb-search-input" type="search" name="search" placeholder="Search listings…" />
+                    <button class="cb-search-btn" type="submit">Search</button>
                 </form>
             </div>
         }
 
-        <!-- 🔥 ALWAYS SHOW -->
-        <div class="navbar-nav ms-auto">
+        <!-- Right actions (ALWAYS visible) -->
+        <div class="cb-nav-right cb-desktop-only">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a class="cb-btn-primary" asp-controller="Listings" asp-action="Create">+ Add Item</a>
+                <div class="cb-divider"></div>
+                <a class="cb-btn-ghost" asp-controller="Auth" asp-action="Logout">Log out</a>
+            }
+            else
+            {
+                <a class="cb-btn-ghost" asp-controller="Auth" asp-action="Login">Log in</a>
+                <a class="cb-btn-primary" asp-controller="Auth" asp-action="Register">Sign up</a>
+            }
+        </div>
 
-         @if (User.Identity != null && User.Identity.IsAuthenticated)
-{
-    <a class="nav-link" asp-controller="Listings" asp-action="Create">Add Item</a>
-    <a class="nav-link" asp-controller="Auth" asp-action="Logout">Log out</a>
-}
-else
-{
-    <a class="nav-link" asp-controller="Auth" asp-action="Login">Add Item</a>
-    <a class="nav-link" asp-controller="Auth" asp-action="Register"><b>Sign Up</b></a>
-    <a class="nav-link" asp-controller="Auth" asp-action="Login"><b>Log In</b></a>
-}
+        <!-- Mobile toggler -->
+        <button class="cb-toggler" onclick="toggleMobileMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
 
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="cb-mobile-menu" id="mobileMenu">
+
+        <!-- Mobile Search -->
+        @if (!isAuthPage)
+        {
+            <form class="cb-mobile-search" method="get" asp-controller="Home" asp-action="Index">
+                <input type="search" name="search" placeholder="Search listings…" />
+                <button type="submit">Go</button>
+            </form>
+        }
+
+        <a class="cb-mobile-link" asp-controller="Home" asp-action="Index">Explore</a>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <a class="cb-mobile-link" asp-controller="Listings" asp-action="Create">+ Add Item</a>
+            <a class="cb-mobile-link" asp-controller="Auth" asp-action="Logout">Log out</a>
+        }
+        else
+        {
+            <a class="cb-mobile-link" asp-controller="Auth" asp-action="Login">Log in</a>
+            <a class="cb-mobile-link" asp-controller="Auth" asp-action="Register">Sign up</a>
+        }
+    </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="cb-main">
+    <div class="container mt-4 flex-grow-1">
+        @RenderBody()
+    </div>
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer class="cb-footer">
+    <div class="cb-footer-inner">
+
+        <div class="cb-footer-top">
+            <div>
+                <a class="cb-footer-brand" asp-controller="Home" asp-action="Index">
+                    <div class="cb-footer-brand-mark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 01-8 0"/>
+                        </svg>
+                    </div>
+                    <span class="cb-footer-brand-name">CampusBazaar</span>
+                </a>
+                <p class="cb-footer-tagline">Buy and sell within your campus community.</p>
+            </div>
+
+            <div class="cb-footer-links">
+                <div class="cb-footer-col">
+                    <h4>Marketplace</h4>
+                    <a asp-controller="Home" asp-action="Index">Explore</a>
+                    <a asp-controller="Listings" asp-action="Create">Sell an Item</a>
+                </div>
+                <div class="cb-footer-col">
+                    <h4>Account</h4>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Auth" asp-action="Logout">Log out</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login">Log in</a>
+                        <a asp-controller="Auth" asp-action="Register">Sign up</a>
+                    }
+                </div>
+                <div class="cb-footer-col">
+                    <h4>Legal</h4>
+                    <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="cb-footer-bottom">
+            <span class="cb-footer-copy">&copy; @DateTime.Now.Year CampusBazaar. All rights reserved.</span>
+            <div class="cb-footer-socials">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
         </div>
 
     </div>
-  </div>
-</nav>
-
-<!-- 🔥 THIS FIXES YOUR ERROR -->
-<div class="container mt-4 flex-grow-1">
-    @RenderBody()
-</div>
-<footer>
-  <div class="f-info">
-
-    <div class="f-info-socials mb-3">
-      <i class="fa-brands fa-square-facebook"></i>
-      <i class="fa-brands fa-instagram"></i>
-      <i class="fa-brands fa-linkedin"></i>
-    </div>
-
-    <div class="f-info-brand mb-2">
-      &copy; CampusBazaar
-    </div>
-
-    <div class="f-info-links mt-2">
-      <a asp-controller="Home" asp-action="Privacy">Privacy</a>
-      <a href="#">Terms</a>
-    </div>
-
-  </div>
 </footer>
 
-
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleMobileMenu() {
+        document.getElementById('mobileMenu').classList.toggle('open');
+    }
+</script>
+
 @RenderSection("Scripts", required: false)
+
 </body>
 </html>
