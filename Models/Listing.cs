@@ -18,7 +18,7 @@ namespace ECommerceMVC.Models   // ✅ ADD THIS
         [Range(1, 1000000, ErrorMessage = "Price must be greater than 0")]
         public decimal Price { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+public DateTime CreatedAt { get; set; }
 
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }

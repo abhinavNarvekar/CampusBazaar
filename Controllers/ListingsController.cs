@@ -45,6 +45,7 @@ public class ListingsController : Controller
         }
 
         listing.UserId = userId;
+        listing.CreatedAt = DateTime.UtcNow;
 
         _context.Listings.Add(listing);
         _context.SaveChanges();
