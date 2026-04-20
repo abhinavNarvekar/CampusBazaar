@@ -9,10 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 🔗 MySQL connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    );
+});
 
 // 🔐 Identity setup (passport equivalent)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
